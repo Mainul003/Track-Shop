@@ -35,6 +35,7 @@ function cartAdd(id, qty = 1) {
   const ex = c.find(x => x.id === id);
   if (ex) ex.qty += qty; else c.push({ ...p, qty });
   cartSave(c);
+  console.log(p,"Product");
   umerang.track({
     eventType: "Add to Cart",
     customProperties: {
