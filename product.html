@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Product — ShopNow</title>
+<link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+
+<div id="nav-root"></div>
+
+<div class="container page-wrap">
+  <div class="breadcrumb">
+    <a href="index.html">Home</a> ›
+    <a href="products.html">Products</a> ›
+    <span id="bc-name">…</span>
+  </div>
+
+  <div class="detail-layout" id="detail-root"></div>
+
+  <div style="margin-top:56px">
+    <div class="sec-head">
+      <div>
+        <div class="sec-tag">More to Explore</div>
+        <h2 class="sec-title">You May Also Like</h2>
+      </div>
+    </div>
+    <div class="product-grid" id="related-grid"></div>
+  </div>
+</div>
+
+<div id="footer-root"></div>
+
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('nav-root').innerHTML = renderNav('products');
+  document.getElementById('footer-root').innerHTML = renderFooter();
+
+  const id = new URLSearchParams(location.search).get('id') || 'p01';
+  const p  = PRODUCTS.find(x => x.id === id) || PRODUCTS[0];
+
+  document.title = `${p.name} — ShopNow`;
+  document.getElementById('bc-name').textContent = p.name;
+
+  let qty = 1;
+  const badgeHTML = p.badge ? `<div class="detail-badge"><span class="badge badge-${p.badgeType}">${p.badge}</span></div>` : '';
+
+  document.getElementById('detail-root').innerHTML = `
+    <div class="detail-imgs">
+      <div class="detail-main-img">${p.emoji}</div>
+      <div class="detail-thumbs">
+        <div class="detail-thumb active">${p.emoji}</div>
+        <div class="detail-thumb">${p.emoji}</div>
+        <div class="detail-thumb">${p.emoji}</div>
+      </div>
+    </div>
+    <div class="detail-info">
+      ${badgeHTML}
+      <div class="detail-cat">${p.cat}</div>
+      <h1 class="detail-name">${p.name}</h1>
+      <div class="detail-stars">${stars(p.rating)} ${p.rating}</div>
+      <div class="detail-reviews">${p.reviews.toLocaleString()} customer reviews</div>
+      <div class="detail-price">${fmt(p.price)}</div>
+      <p class="detail-desc">${p.desc}</p>
+
+      <div style="margin-bottom:8px;font-size:.82rem;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em">Quantity</div>
+      <div class="qty-picker">
+        <button class="qty-btn" onclick="changeQty(-1)">−</button>
+        <span class="qty-val" id="qty-val">1</span>
+        <button class="qty-btn" onclick="changeQty(1)">+</button>
+      </div>
+
+      <div class="detail-ctas">
+        <button class="btn btn-ink btn-lg" style="flex:1" onclick="doAddToCart()">Add to Cart</button>
+        <button class="btn btn-rust btn-lg" onclick="doBuyNow()">Buy Now</button>
+      </div>
+
+      <div class="detail-meta">
+        <div class="detail-meta-row"><div class="detail-meta-icon">🚚</div> Free shipping on orders over $50</div>
+        <div class="detail-meta-row"><div class="detail-meta-icon">↩️</div> 30-day hassle-free returns</div>
+        <div class="detail-meta-row"><div class="detail-meta-icon">🔒</div> Secure, encrypted checkout</div>
+        <div class="detail-meta-row"><div class="detail-meta-icon">⭐</div> ${p.reviews.toLocaleString()} verified reviews</div>
+      </div>
+    </div>`;
+
+  function changeQty(d) {
+    qty = Math.max(1, qty + d);
+    document.getElementById('qty-val').textContent = qty;
+  }
+  function doAddToCart() {
+    cartAdd(p.id, qty);
+    showCartToast(p.name);
+  }
+  function doBuyNow() {
+    cartAdd(p.id, qty);
+    goCart();
+  }
+
+  // Related: same category first, fill from rest
+  const same  = PRODUCTS.filter(x => x.cat === p.cat && x.id !== p.id);
+  const other = PRODUCTS.filter(x => x.cat !== p.cat && x.id !== p.id);
+  const related = [...same, ...other].slice(0, 4);
+  document.getElementById('related-grid').innerHTML = related.map(productCardHTML).join('');
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# Cloudflare Pages redirects
+# Clean URL support — optional
+/home    /index.html    301
+/shop    /products.html 301
+/login   /auth.html     301
+/signup  /auth.html     301

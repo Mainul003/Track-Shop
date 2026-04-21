@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>All Products — ShopNow</title>
+<link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+
+<div id="nav-root"></div>
+
+<div class="container page-wrap">
+  <div class="breadcrumb">
+    <a href="index.html">Home</a> ›
+    <span id="bc-label">All Products</span>
+  </div>
+
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+    <div>
+      <h1 style="font-family:'Fraunces',serif;font-size:1.8rem;font-weight:600;letter-spacing:-.03em" id="page-title">All Products</h1>
+      <p class="text-muted mt-8" id="page-sub">10 products</p>
+    </div>
+    <select id="sort-sel" style="background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:9px 14px;font-family:inherit;font-size:.875rem;color:var(--ink);outline:none;cursor:pointer" onchange="render()">
+      <option value="default">Sort: Featured</option>
+      <option value="price-asc">Price: Low → High</option>
+      <option value="price-desc">Price: High → Low</option>
+      <option value="rating">Top Rated</option>
+    </select>
+  </div>
+
+  <div class="filter-bar" id="filter-bar">
+    <button class="filter-btn active" data-cat="all" onclick="setFilter('all')">All</button>
+    <button class="filter-btn" data-cat="Footwear" onclick="setFilter('Footwear')">👟 Footwear</button>
+    <button class="filter-btn" data-cat="Electronics" onclick="setFilter('Electronics')">🎧 Electronics</button>
+    <button class="filter-btn" data-cat="Apparel" onclick="setFilter('Apparel')">👕 Apparel</button>
+    <button class="filter-btn" data-cat="Accessories" onclick="setFilter('Accessories')">🕶️ Accessories</button>
+    <button class="filter-btn" data-cat="Home" onclick="setFilter('Home')">🏠 Home</button>
+    <span class="filter-count" id="filter-count"></span>
+  </div>
+
+  <div class="product-grid" id="grid"></div>
+</div>
+
+<div id="footer-root"></div>
+
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('nav-root').innerHTML = renderNav('products');
+  document.getElementById('footer-root').innerHTML = renderFooter();
+
+  // Read URL param
+  const urlCat = new URLSearchParams(location.search).get('cat') || 'all';
+  let activeCat = urlCat;
+
+  function setFilter(cat) {
+    activeCat = cat;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+    render();
+  }
+
+  function render() {
+    let list = activeCat === 'all' ? [...PRODUCTS] : PRODUCTS.filter(p => p.cat === activeCat);
+    const sort = document.getElementById('sort-sel').value;
+    if (sort === 'price-asc')  list.sort((a,b) => a.price - b.price);
+    if (sort === 'price-desc') list.sort((a,b) => b.price - a.price);
+    if (sort === 'rating')     list.sort((a,b) => b.rating - a.rating);
+
+    document.getElementById('grid').innerHTML = list.length
+      ? list.map(productCardHTML).join('')
+      : `<div class="no-results" style="grid-column:1/-1"><div class="no-results-icon">🔍</div><p>No products in this category.</p></div>`;
+
+    const label = activeCat === 'all' ? 'All Products' : activeCat;
+    document.getElementById('page-title').textContent = label;
+    document.getElementById('page-sub').textContent = `${list.length} product${list.length !== 1 ? 's' : ''}`;
+    document.getElementById('bc-label').textContent = label;
+    document.getElementById('filter-count').textContent = `${list.length} shown`;
+  }
+
+  setFilter(activeCat);
+</script>
+</body>
+</html>

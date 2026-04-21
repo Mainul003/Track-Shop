@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Order Confirmed — ShopNow</title>
+<link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+
+<div id="nav-root"></div>
+
+<div class="container">
+  <div class="success-box">
+    <div class="success-icon">🎉</div>
+    <h1 class="success-title">Order Confirmed!</h1>
+    <p class="success-sub">Thank you for your purchase. A confirmation email has been sent to your inbox.</p>
+    <div class="order-id-box" id="order-id">—</div>
+    <p style="color:var(--ink3);font-size:.82rem">Estimated delivery: 5–7 business days</p>
+    <div style="background:var(--cream2);border-radius:10px;padding:16px;margin-top:20px;text-align:left">
+      <div style="font-size:.78rem;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">What's next?</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:.875rem">
+        <div style="display:flex;gap:10px;align-items:center"><span>📧</span> Confirmation email sent</div>
+        <div style="display:flex;gap:10px;align-items:center"><span>📦</span> Order is being packed</div>
+        <div style="display:flex;gap:10px;align-items:center"><span>🚚</span> Tracking info sent when shipped</div>
+        <div style="display:flex;gap:10px;align-items:center"><span>🏠</span> Delivered to your door</div>
+      </div>
+    </div>
+    <div class="success-btns">
+      <button class="btn btn-ink" onclick="goHome()">← Back to Store</button>
+      <button class="btn btn-rust" onclick="goProducts()">Shop More</button>
+    </div>
+  </div>
+</div>
+
+<div id="footer-root"></div>
+
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('nav-root').innerHTML = renderNav('');
+  document.getElementById('footer-root').innerHTML = renderFooter();
+  const orderId = new URLSearchParams(location.search).get('order') || 'ORD-DEMO';
+  document.getElementById('order-id').textContent = orderId;
+</script>
+</body>
+</html>

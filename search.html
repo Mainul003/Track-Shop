@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Search — ShopNow</title>
+<link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+
+<div id="nav-root"></div>
+
+<div class="container page-wrap">
+  <div class="breadcrumb">
+    <a href="index.html">Home</a> › <span>Search Results</span>
+  </div>
+
+  <div class="search-banner" id="search-banner"></div>
+
+  <div id="results-grid"></div>
+</div>
+
+<div id="footer-root"></div>
+
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('nav-root').innerHTML = renderNav('');
+  document.getElementById('footer-root').innerHTML = renderFooter();
+
+  const q = new URLSearchParams(location.search).get('q') || '';
+  document.title = `"${q}" — ShopNow`;
+
+  if (q) document.getElementById('nav-q').value = q;
+
+  const results = q
+    ? PRODUCTS.filter(p =>
+        p.name.toLowerCase().includes(q.toLowerCase()) ||
+        p.cat.toLowerCase().includes(q.toLowerCase()) ||
+        p.desc.toLowerCase().includes(q.toLowerCase()))
+    : [];
+
+  document.getElementById('search-banner').innerHTML =
+    q ? `Search results for "<strong>${q}</strong>" — <strong>${results.length}</strong> product${results.length !== 1 ? 's' : ''} found`
+      : 'Enter a search term above.';
+
+  const grid = document.getElementById('results-grid');
+  if (results.length > 0) {
+    grid.className = 'product-grid';
+    grid.innerHTML = results.map(productCardHTML).join('');
+  } else if (q) {
+    grid.innerHTML = `
+      <div class="no-results">
+        <div class="no-results-icon">🔍</div>
+        <h3 style="font-family:'Fraunces',serif;margin-bottom:10px">No results for "${q}"</h3>
+        <p style="margin-bottom:20px">Try a different search or browse all products.</p>
+        <button class="btn btn-ink" onclick="goProducts()">Browse All Products</button>
+      </div>`;
+  }
+</script>
+</body>
+</html>

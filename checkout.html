@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Checkout — ShopNow</title>
+<link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+
+<div id="nav-root"></div>
+
+<div class="container page-wrap">
+  <div class="breadcrumb">
+    <a href="index.html">Home</a> ›
+    <a href="cart.html">Cart</a> ›
+    <span>Checkout</span>
+  </div>
+  <h1 style="font-family:'Fraunces',serif;font-size:1.8rem;font-weight:600;letter-spacing:-.03em;margin-bottom:28px">Checkout</h1>
+
+  <div class="steps-bar" id="steps-bar"></div>
+
+  <div class="checkout-layout">
+    <div id="form-area"></div>
+    <div>
+      <div class="order-summary" id="co-summary"></div>
+    </div>
+  </div>
+</div>
+
+<div id="footer-root"></div>
+
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('nav-root').innerHTML = renderNav('');
+  document.getElementById('footer-root').innerHTML = renderFooter();
+
+  let step = 1;
+  let data = {};
+
+  const STEPS = ['Contact', 'Shipping', 'Payment'];
+
+  function renderSteps() {
+    document.getElementById('steps-bar').innerHTML = STEPS.map((s, i) => {
+      const n = i + 1;
+      const cls = n < step ? 'done' : n === step ? 'active' : '';
+      return `
+        <div class="step-node">
+          <div class="step-circle ${cls}">${n < step ? '✓' : n}</div>
+          <span class="step-label ${cls}">${s}</span>
+        </div>
+        ${i < 2 ? '<div class="step-connector"></div>' : ''}`;
+    }).join('');
+  }
+
+  function renderSummary() {
+    const cart = cartGet();
+    const sub  = cartTotal(cart);
+    const tax  = sub * 0.08;
+    const total = sub + tax;
+    document.getElementById('co-summary').innerHTML = `
+      <div class="os-title">Order Summary</div>
+      ${cart.map(i => `
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <span style="font-size:1.6rem">${i.emoji}</span>
+          <div style="flex:1">
+            <div style="font-size:.85rem;font-weight:600">${i.name}</div>
+            <div style="font-size:.75rem;color:var(--ink3)">Qty: ${i.qty}</div>
+          </div>
+          <span style="font-weight:700;font-size:.9rem">${fmt(i.price * i.qty)}</span>
+        </div>`).join('')}
+      <hr class="os-divider"/>
+      <div class="os-row"><span>Subtotal</span><span>${fmt(sub)}</span></div>
+      <div class="os-row"><span>Shipping</span><span style="color:var(--forest);font-weight:600">FREE</span></div>
+      <div class="os-row"><span>Tax (8%)</span><span>${fmt(tax)}</span></div>
+      <hr class="os-divider"/>
+      <div class="os-total"><span>Total</span><span>${fmt(total)}</span></div>`;
+  }
+
+  function renderForm() {
+    renderSteps();
+    renderSummary();
+    const area = document.getElementById('form-area');
+
+    if (step === 1) {
+      area.innerHTML = `
+        <div class="co-card">
+          <div class="co-card-title">Contact Information</div>
+          <div class="form-grid">
+            <div class="form-2col">
+              <div class="field"><label>First Name *</label><input id="f-first" value="${data.first||''}" placeholder="Alice" required/></div>
+              <div class="field"><label>Last Name *</label><input id="f-last" value="${data.last||''}" placeholder="Smith" required/></div>
+            </div>
+            <div class="field"><label>Email Address *</label><input type="email" id="f-email" value="${data.email||''}" placeholder="alice@example.com" required/></div>
+            <div class="field"><label>Phone Number</label><input type="tel" id="f-phone" value="${data.phone||''}" placeholder="+1 555 000 0000"/></div>
+            <div style="display:flex;gap:10px;margin-top:4px">
+              <button class="btn btn-outline" onclick="goCart()">← Back to Cart</button>
+              <button class="btn btn-rust" style="flex:1" onclick="next1()">Continue to Shipping →</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    else if (step === 2) {
+      area.innerHTML = `
+        <div class="co-card">
+          <div class="co-card-title">Shipping Address</div>
+          <div class="form-grid">
+            <div class="field"><label>Street Address *</label><input id="f-addr" value="${data.addr||''}" placeholder="123 Main Street" required/></div>
+            <div class="form-2col">
+              <div class="field"><label>City *</label><input id="f-city" value="${data.city||''}" placeholder="New York" required/></div>
+              <div class="field"><label>State / Province</label><input id="f-state" value="${data.state||''}" placeholder="NY"/></div>
+            </div>
+            <div class="form-2col">
+              <div class="field"><label>ZIP / Postal Code *</label><input id="f-zip" value="${data.zip||''}" placeholder="10001" required/></div>
+              <div class="field"><label>Country</label>
+                <select id="f-country">
+                  <option ${data.country==='US'?'selected':''}>United States</option>
+                  <option ${data.country==='UK'?'selected':''}>United Kingdom</option>
+                  <option ${data.country==='CA'?'selected':''}>Canada</option>
+                  <option ${data.country==='AU'?'selected':''}>Australia</option>
+                  <option ${data.country==='DE'?'selected':''}>Germany</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="co-card">
+          <div class="co-card-title">Shipping Method</div>
+          <label class="shipping-opt">
+            <input type="radio" name="ship" value="standard" ${data.ship!=='express'?'checked':''}/>&nbsp;
+            <div class="shipping-opt-info">
+              <div class="shipping-opt-name">Standard Shipping</div>
+              <div class="shipping-opt-days">5–7 business days</div>
+            </div>
+            <span style="font-weight:700;color:var(--forest)">FREE</span>
+          </label>
+          <label class="shipping-opt">
+            <input type="radio" name="ship" value="express" ${data.ship==='express'?'checked':''}/>&nbsp;
+            <div class="shipping-opt-info">
+              <div class="shipping-opt-name">Express Shipping</div>
+              <div class="shipping-opt-days">2–3 business days</div>
+            </div>
+            <span style="font-weight:700">$12.99</span>
+          </label>
+          <label class="shipping-opt">
+            <input type="radio" name="ship" value="overnight" ${data.ship==='overnight'?'checked':''}/>&nbsp;
+            <div class="shipping-opt-info">
+              <div class="shipping-opt-name">Overnight Delivery</div>
+              <div class="shipping-opt-days">Next business day</div>
+            </div>
+            <span style="font-weight:700">$29.99</span>
+          </label>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <button class="btn btn-outline" onclick="step=1;renderForm()">← Back</button>
+            <button class="btn btn-rust" style="flex:1" onclick="next2()">Continue to Payment →</button>
+          </div>
+        </div>`;
+    }
+
+    else {
+      area.innerHTML = `
+        <div class="co-card">
+          <div style="background:rgba(45,74,62,.08);border:1.5px solid rgba(45,74,62,.2);border-radius:9px;padding:12px 16px;font-size:.82rem;color:var(--forest);margin-bottom:20px">
+            🔒 This is a demo site. Please do not enter real card details.
+          </div>
+          <div class="co-card-title">Payment Details</div>
+          <div class="form-grid">
+            <div class="field"><label>Card Number</label><input id="f-card" placeholder="4242 4242 4242 4242" maxlength="19" oninput="fmtCard(this)"/></div>
+            <div class="field"><label>Name on Card</label><input id="f-cname" placeholder="Alice Smith"/></div>
+            <div class="form-2col">
+              <div class="field"><label>Expiry Date</label><input id="f-exp" placeholder="MM / YY" maxlength="7"/></div>
+              <div class="field"><label>Security Code</label><input id="f-cvv" placeholder="123" maxlength="4"/></div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="btn btn-outline" onclick="step=2;renderForm()">← Back</button>
+              <button class="btn btn-rust btn-lg" style="flex:1" onclick="placeOrder()">Place Order →</button>
+            </div>
+          </div>
+        </div>`;
+    }
+  }
+
+  function fmtCard(el) {
+    let v = el.value.replace(/\D/g,'').slice(0,16);
+    el.value = v.replace(/(.{4})/g,'$1 ').trim();
+  }
+
+  function next1() {
+    const first = document.getElementById('f-first').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    if (!first || !email) { alert('Please fill in required fields.'); return; }
+    data.first = first;
+    data.last  = document.getElementById('f-last').value.trim();
+    data.email = email;
+    data.phone = document.getElementById('f-phone').value.trim();
+    step = 2; renderForm();
+  }
+
+  function next2() {
+    const addr = document.getElementById('f-addr').value.trim();
+    const city = document.getElementById('f-city').value.trim();
+    const zip  = document.getElementById('f-zip').value.trim();
+    if (!addr || !city || !zip) { alert('Please fill in required fields.'); return; }
+    data.addr    = addr;
+    data.city    = city;
+    data.state   = document.getElementById('f-state').value.trim();
+    data.zip     = zip;
+    data.country = document.getElementById('f-country').value;
+    data.ship    = document.querySelector('[name="ship"]:checked')?.value || 'standard';
+    step = 3; renderForm();
+  }
+
+  function placeOrder() {
+    const cart = cartGet();
+    if (cart.length === 0) { goProducts(); return; }
+    const orderId = genId();
+    cartClear();
+    goSuccess(orderId);
+  }
+
+  if (cartGet().length === 0) {
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('form-area').innerHTML = `
+        <div style="text-align:center;padding:60px 20px">
+          <div style="font-size:3rem;margin-bottom:14px">🛒</div>
+          <p style="color:var(--ink3);margin-bottom:20px">Your cart is empty.</p>
+          <button class="btn btn-rust" onclick="goProducts()">Shop Products</button>
+        </div>`;
+    });
+  }
+
+  renderForm();
+</script>
+</body>
+</html>

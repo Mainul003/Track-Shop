@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Account — ShopNow</title>
+<link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+
+<div id="nav-root"></div>
+
+<div class="container">
+  <div class="auth-outer">
+
+    <!-- SIGNUP CARD -->
+    <div class="auth-card" id="signup-card">
+      <h1 class="auth-title">Create Account</h1>
+      <p class="auth-sub">Join thousands of happy shoppers.</p>
+
+      <div class="social-btns">
+        <button class="social-btn" onclick="socialAuth('google')">🔵 Google</button>
+        <button class="social-btn" onclick="socialAuth('facebook')">📘 Facebook</button>
+        <button class="social-btn" onclick="socialAuth('apple')">🍎 Apple</button>
+      </div>
+      <div class="or-divider">or sign up with email</div>
+
+      <form class="form-grid" onsubmit="doSignup(event)">
+        <div class="form-2col">
+          <div class="field"><label>First Name *</label><input id="su-first" placeholder="Alice" required/></div>
+          <div class="field"><label>Last Name *</label><input id="su-last" placeholder="Smith" required/></div>
+        </div>
+        <div class="field"><label>Email Address *</label><input type="email" id="su-email" placeholder="alice@example.com" required/></div>
+        <div class="field"><label>Password *</label><input type="password" id="su-pw" placeholder="Minimum 8 characters" required/></div>
+        <div class="field"><label>Confirm Password *</label><input type="password" id="su-pw2" placeholder="Repeat your password" required/></div>
+        <div style="display:flex;align-items:center;gap:9px;font-size:.875rem">
+          <input type="checkbox" id="su-nl" checked style="accent-color:var(--rust);width:16px;height:16px"/>
+          <label for="su-nl" style="cursor:pointer">Subscribe to our newsletter for deals & news</label>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:9px;font-size:.875rem">
+          <input type="checkbox" id="su-terms" required style="accent-color:var(--rust);width:16px;height:16px;margin-top:2px"/>
+          <label for="su-terms" style="cursor:pointer;color:var(--ink2)">I agree to the <a href="#" style="color:var(--rust);font-weight:600">Terms of Service</a> and <a href="#" style="color:var(--rust);font-weight:600">Privacy Policy</a></label>
+        </div>
+        <button class="btn btn-ink btn-full btn-lg" type="submit">Create Account →</button>
+      </form>
+      <div class="auth-switch">Already have an account? <button onclick="showLogin()">Sign in →</button></div>
+    </div>
+
+    <!-- LOGIN CARD -->
+    <div class="auth-card" id="login-card" style="display:none">
+      <h1 class="auth-title">Welcome Back</h1>
+      <p class="auth-sub">Sign in to your ShopNow account.</p>
+
+      <div class="social-btns">
+        <button class="social-btn" onclick="socialAuth('google')">🔵 Google</button>
+        <button class="social-btn" onclick="socialAuth('facebook')">📘 Facebook</button>
+        <button class="social-btn" onclick="socialAuth('apple')">🍎 Apple</button>
+      </div>
+      <div class="or-divider">or sign in with email</div>
+
+      <form class="form-grid" onsubmit="doLogin(event)">
+        <div class="field"><label>Email Address *</label><input type="email" id="li-email" placeholder="alice@example.com" required/></div>
+        <div class="field">
+          <label>Password *</label>
+          <input type="password" id="li-pw" placeholder="Your password" required/>
+          <a href="#" style="font-size:.78rem;color:var(--rust);margin-top:4px;display:inline-block" onclick="forgotPw(event)">Forgot your password?</a>
+        </div>
+        <button class="btn btn-ink btn-full btn-lg" type="submit">Sign In →</button>
+      </form>
+      <div class="auth-switch">Don't have an account? <button onclick="showSignup()">Create one →</button></div>
+    </div>
+
+  </div>
+</div>
+
+<div id="footer-root"></div>
+
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('nav-root').innerHTML = renderNav('auth');
+  document.getElementById('footer-root').innerHTML = renderFooter();
+
+  function showLogin()  {
+    document.getElementById('signup-card').style.display = 'none';
+    document.getElementById('login-card').style.display  = 'block';
+  }
+  function showSignup() {
+    document.getElementById('login-card').style.display  = 'none';
+    document.getElementById('signup-card').style.display = 'block';
+  }
+
+  function socialAuth(provider) {
+    showCartToast(`Connecting with ${provider.charAt(0).toUpperCase() + provider.slice(1)}…`);
+  }
+
+  function doSignup(e) {
+    e.preventDefault();
+    const pw  = document.getElementById('su-pw').value;
+    const pw2 = document.getElementById('su-pw2').value;
+    if (pw !== pw2) { alert('Passwords do not match.'); return; }
+    if (pw.length < 8) { alert('Password must be at least 8 characters.'); return; }
+    showCartToast('Account created! Welcome to ShopNow 🎉');
+    setTimeout(() => goHome(), 1200);
+  }
+
+  function doLogin(e) {
+    e.preventDefault();
+    showCartToast('Signed in successfully!');
+    setTimeout(() => goHome(), 1200);
+  }
+
+  function forgotPw(e) {
+    e.preventDefault();
+    const email = document.getElementById('li-email').value.trim();
+    if (!email) { alert('Please enter your email address first.'); return; }
+    showCartToast(`Password reset sent to ${email}`);
+  }
+</script>
+</body>
+</html>

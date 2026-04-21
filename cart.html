@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Your Cart — ShopNow</title>
+<link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+
+<div id="nav-root"></div>
+
+<div class="container page-wrap">
+  <div class="breadcrumb">
+    <a href="index.html">Home</a> › <span>Cart</span>
+  </div>
+  <h1 style="font-family:'Fraunces',serif;font-size:1.8rem;font-weight:600;letter-spacing:-.03em;margin-bottom:28px">Your Cart</h1>
+  <div id="cart-root"></div>
+</div>
+
+<div id="footer-root"></div>
+
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('nav-root').innerHTML = renderNav('');
+  document.getElementById('footer-root').innerHTML = renderFooter();
+
+  function render() {
+    const cart = cartGet();
+    const root = document.getElementById('cart-root');
+
+    if (cart.length === 0) {
+      root.innerHTML = `
+        <div class="cart-empty">
+          <div class="cart-empty-icon">🛒</div>
+          <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin-bottom:10px">Your cart is empty</h2>
+          <p class="text-muted" style="margin-bottom:24px">Looks like you haven't added anything yet.</p>
+          <button class="btn btn-ink btn-lg" onclick="goProducts()">Browse Products</button>
+        </div>`;
+      return;
+    }
+
+    const sub      = cartTotal(cart);
+    const shipping = sub >= 50 ? 0 : 9.99;
+    const tax      = sub * 0.08;
+    const total    = sub + shipping + tax;
+
+    root.innerHTML = `
+      <div class="cart-layout">
+        <div>
+          <div class="cart-table-head">
+            <span>Product</span><span>Qty</span><span>Price</span><span>Total</span><span></span>
+          </div>
+          <div id="items-list"></div>
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="btn btn-outline btn-sm" onclick="goProducts()">← Continue Shopping</button>
+            <button class="btn btn-sm" style="background:rgba(184,76,0,.08);color:var(--rust);border:1.5px solid rgba(184,76,0,.2)" onclick="doClear()">🗑 Clear Cart</button>
+          </div>
+        </div>
+        <div>
+          <div class="order-summary">
+            <div class="os-title">Order Summary</div>
+            <div class="os-row"><span>Subtotal</span><span>${fmt(sub)}</span></div>
+            <div class="os-row">
+              <span>Shipping</span>
+              <span style="color:var(--forest);font-weight:600">${shipping === 0 ? 'FREE' : fmt(shipping)}</span>
+            </div>
+            <div class="os-row"><span>Tax (8%)</span><span>${fmt(tax)}</span></div>
+            <hr class="os-divider"/>
+            <div class="os-total"><span>Total</span><span>${fmt(total)}</span></div>
+            <button class="btn btn-rust btn-lg btn-full" onclick="goCheckout()">Proceed to Checkout →</button>
+            <div style="text-align:center;color:var(--ink3);font-size:.76rem;margin-top:12px">🔒 Secure & encrypted checkout</div>
+          </div>
+
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:14px">
+            <div style="font-size:.82rem;font-weight:700;margin-bottom:12px">Have a coupon?</div>
+            <form style="display:flex;gap:8px" onsubmit="applyCoupon(event)">
+              <input type="text" id="coupon" placeholder="Enter code" style="flex:1;background:var(--cream);border:1.5px solid var(--border);border-radius:8px;padding:9px 13px;font-family:inherit;font-size:.875rem;outline:none"/>
+              <button class="btn btn-ghost btn-sm" type="submit">Apply</button>
+            </form>
+          </div>
+        </div>
+      </div>`;
+
+    const list = document.getElementById('items-list');
+    cart.forEach(item => {
+      const d = document.createElement('div');
+      d.className = 'cart-item';
+      d.innerHTML = `
+        <div class="ci-product">
+          <div class="ci-img">${item.emoji}</div>
+          <div>
+            <div class="ci-name">${item.name}</div>
+            <div class="ci-cat">${item.cat}</div>
+          </div>
+        </div>
+        <div class="ci-qty">
+          <button onclick="doUpdateQty('${item.id}', ${item.qty - 1})">−</button>
+          <span>${item.qty}</span>
+          <button onclick="doUpdateQty('${item.id}', ${item.qty + 1})">+</button>
+        </div>
+        <div class="ci-price">${fmt(item.price)}</div>
+        <div class="ci-total fw-800">${fmt(item.price * item.qty)}</div>
+        <button class="ci-remove" onclick="doRemove('${item.id}')">✕</button>`;
+      list.appendChild(d);
+    });
+  }
+
+  function doRemove(id)         { cartRemove(id);          render(); }
+  function doUpdateQty(id, qty) { cartUpdateQty(id, qty);  render(); }
+  function doClear()            { cartClear();              render(); }
+  function applyCoupon(e) {
+    e.preventDefault();
+    const code = document.getElementById('coupon').value.toUpperCase().trim();
+    alert(code === 'SHOP25'
+      ? '✅ Coupon SHOP25 applied! 25% off your order.'
+      : `❌ Coupon "${code}" is not valid. Try SHOP25.`);
+  }
+
+  render();
+</script>
+</body>
+</html>

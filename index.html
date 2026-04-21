@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ShopNow — Premium Online Store</title>
+<link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+
+<div id="nav-root"></div>
+
+<div class="container page-wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-kicker">✦ Summer Collection 2025</div>
+      <h1>Style That<br/><em>Speaks Volumes</em></h1>
+      <p>Curated essentials from the world's best brands. Free shipping on all orders over $50.</p>
+      <div class="hero-btns">
+        <button class="btn btn-rust btn-xl" onclick="goProducts()">Shop All Products</button>
+        <button class="btn btn-outline btn-xl" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="goProducts('Electronics')">New Arrivals →</button>
+      </div>
+    </div>
+    <div class="hero-visual">🛍️</div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div class="sec-tag">Browse by Category</div>
+  <h2 class="sec-title mb-24">Shop Categories</h2>
+  <div class="cat-pills" id="cat-pills"></div>
+
+  <!-- FEATURED -->
+  <div class="sec-head">
+    <div>
+      <div class="sec-tag">Hand-picked</div>
+      <h2 class="sec-title">Featured Products</h2>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="goProducts()">View All 10 →</button>
+  </div>
+  <div class="product-grid" id="featured-grid"></div>
+
+  <!-- NEWSLETTER -->
+  <div class="nl-strip">
+    <div>
+      <h2>Get exclusive deals</h2>
+      <p>Join 12,840 members and never miss a sale or new arrival.</p>
+    </div>
+    <form class="nl-form" onsubmit="handleNewsletter(event)">
+      <input class="nl-input" type="email" id="nl-email" placeholder="your@email.com" required/>
+      <button class="btn btn-rust" type="submit">Subscribe</button>
+    </form>
+  </div>
+
+  <!-- MORE PRODUCTS -->
+  <div class="sec-head">
+    <div>
+      <div class="sec-tag">All Products</div>
+      <h2 class="sec-title">Complete Collection</h2>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="goProducts()">See All →</button>
+  </div>
+  <div class="product-grid" id="more-grid"></div>
+
+</div>
+
+<div id="footer-root"></div>
+
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('nav-root').innerHTML = renderNav('home');
+  document.getElementById('footer-root').innerHTML = renderFooter();
+
+  // Categories
+  const cp = document.getElementById('cat-pills');
+  CATEGORIES.forEach(cat => {
+    const b = document.createElement('button');
+    b.className = 'cat-pill';
+    b.innerHTML = `<span class="cat-pill-icon">${CAT_ICONS[cat]}</span>${cat}`;
+    b.onclick = () => goProducts(cat);
+    cp.appendChild(b);
+  });
+
+  // Featured (first 6)
+  const fg = document.getElementById('featured-grid');
+  fg.innerHTML = PRODUCTS.slice(0,6).map(productCardHTML).join('');
+
+  // More (remaining)
+  const mg = document.getElementById('more-grid');
+  mg.innerHTML = PRODUCTS.slice(6).map(productCardHTML).join('');
+
+  function handleNewsletter(e) {
+    e.preventDefault();
+    const email = document.getElementById('nl-email').value.trim();
+    document.getElementById('nl-email').value = '';
+    showCartToast('Subscribed! Welcome to ShopNow.');
+  }
+</script>
+</body>
+</html>
