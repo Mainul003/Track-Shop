@@ -35,6 +35,16 @@ function cartAdd(id, qty = 1) {
   const ex = c.find(x => x.id === id);
   if (ex) ex.qty += qty; else c.push({ ...p, qty });
   cartSave(c);
+  umerang.track({
+    eventType: "Add to Cart",
+    customProperties: {
+      currency: "USD",
+      product_id: p.id,
+      product_name: p.name,
+      price: p.price,
+      quantity: qty
+    }
+  });
 }
 function cartRemove(id) {
   cartSave(cartGet().filter(x => x.id !== id));
