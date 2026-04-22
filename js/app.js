@@ -77,15 +77,16 @@ function trackAbandonedCart() {
   const cart = cartGet();
   if (cart.length === 0) return;
   umerang.track({
-    eventType: "abandoned_cart",
-    customProperties: {
-      currency: "USD",
-      cart: cartTotal(cart).toFixed(2),
-      item: cart.reduce((s, i) => s + i.qty, 0),
-      product: cart[0].id,
-      name: cart[0].name
-    }
-  });
+  eventType: "add_to_cart",
+  customProperties: {
+    currency: "USD",
+    product_id: "p.id",
+    product_name: "p.name",
+    price: "p.price",
+    quantity: "qty",
+    items: "c.items"
+  }
+});
 }
 
 function cartUpdateUI() {
