@@ -35,6 +35,7 @@
       <div class="hero-btns">
         <button class="btn btn-rust btn-xl" onclick="goProducts()">Shop All Products</button>
         <button class="btn btn-outline btn-xl" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="goProducts('Electronics')">New Arrivals →</button>
+        <button class="btn btn-outline btn-xl" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="openModal()">View Offer 🎁</button>
       </div>
     </div>
     <div class="hero-visual">🛍️</div>
@@ -67,6 +68,38 @@
     </form>
   </div>
 
+  <!-- VIDEO SECTION — fires: video_start, video_progress, video_end -->
+  <div style="margin:48px 0">
+    <div class="sec-tag">Watch</div>
+    <h2 class="sec-title mb-24">Featured Video</h2>
+    <video id="track-video" controls
+      style="width:100%;border-radius:14px;border:1px solid var(--border);background:#000">
+      <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4"/>
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <!-- EXTERNAL LINKS & DOWNLOADS — fires: external_link_click, file_download -->
+  <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:32px">
+    <div class="sec-tag">Resources</div>
+    <h3 style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;margin-bottom:16px">Helpful Links & Downloads</h3>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <a href="https://www.google.com" target="_blank" rel="noopener"
+        style="display:inline-flex;align-items:center;gap:6px"
+        class="btn btn-outline btn-sm">🔗 Visit Google</a>
+      <a href="https://www.wikipedia.org" target="_blank" rel="noopener"
+        style="display:inline-flex;align-items:center;gap:6px"
+        class="btn btn-outline btn-sm">🔗 Visit Wikipedia</a>
+      <a href="https://www.w3schools.com/html/mov_bbb.mp4" download="sample-video.mp4"
+        style="display:inline-flex;align-items:center;gap:6px"
+        class="btn btn-ghost btn-sm">📄 Download Catalogue (PDF)</a>
+      <a href="https://www.w3.org/WAI/WCAG21/quickref/wcag21-quickref-20180920.pdf" download="size-guide.pdf"
+        target="_blank"
+        style="display:inline-flex;align-items:center;gap:6px"
+        class="btn btn-ghost btn-sm">📄 Download Size Guide</a>
+    </div>
+  </div>
+
   <!-- MORE PRODUCTS -->
   <div class="sec-head">
     <div>
@@ -80,6 +113,20 @@
 </div>
 
 <div id="footer-root"></div>
+
+<!-- MODAL — fires: modal_open, modal_close, modal_action -->
+<div id="promo-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:40px;max-width:460px;width:90%;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+    <h2 style="font-family:'Fraunces',serif;font-size:1.5rem;margin-bottom:12px">Special Offer 🎁</h2>
+    <p style="color:var(--ink3);margin-bottom:24px;line-height:1.6">Get 20% off your first order. Use code <strong style="color:var(--rust)">WELCOME20</strong> at checkout. Limited time only!</p>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-rust" style="flex:1" onclick="modalAction('claim_offer')">Claim Offer</button>
+      <button class="btn btn-outline" onclick="closeModal()">Maybe Later</button>
+    </div>
+    <button onclick="closeModal()"
+      style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--ink3);line-height:1">✕</button>
+  </div>
+</div>
 
 <script src="js/app.js"></script>
 <script>
@@ -110,6 +157,63 @@
     document.getElementById('nl-email').value = '';
     showCartToast('Subscribed! Welcome to ShopNow.');
   }
+
+  // ── MODAL ──
+  function openModal() {
+    const modal = document.getElementById('promo-modal');
+    modal.style.display = 'flex';
+  }
+  function closeModal() {
+    const modal = document.getElementById('promo-modal');
+    modal.style.display = 'none';
+  }
+  function modalAction(action) {
+    closeModal();
+    goCart();
+  }
+  // Close modal on backdrop click
+  document.getElementById('promo-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // ── VIDEO TRACKING ──
+  (function() {
+    const video = document.getElementById('track-video');
+    if (!video) return;
+    const milestones = [25, 50, 75, 100];
+    const reached = new Set();
+    video.addEventListener('play', function() {
+      if (!reached.has('start')) {
+        reached.add('start');
+      }
+    });
+    video.addEventListener('timeupdate', function() {
+      if (!video.duration) return;
+      const pct = (video.currentTime / video.duration) * 100;
+      milestones.forEach(m => {
+        if (pct >= m && !reached.has(m)) {
+          reached.add(m);
+        }
+      });
+    });
+    video.addEventListener('ended', function() {
+      // video_end fired
+    });
+  })();
+
+  // ── SCROLL DEPTH TRACKING ──
+  (function() {
+    const milestones = [25, 50, 75, 100];
+    const reached = new Set();
+    window.addEventListener('scroll', function() {
+      const scrolled = ((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight) * 100;
+      milestones.forEach(m => {
+        if (scrolled >= m && !reached.has(m)) {
+          reached.add(m);
+        }
+      });
+    });
+  })();
 </script>
 </body>
 </html>
