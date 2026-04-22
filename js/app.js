@@ -1,3 +1,17 @@
+// Google Analytics
+(function() {
+  var script = document.createElement('script');
+  script.async = true;
+  script.src = 'https://www.googletagmanager.com/gtag/js?id=G-64VXG3DWLC';
+  document.head.appendChild(script);
+
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  window.gtag = gtag;
+  gtag('js', new Date());
+  gtag('config', 'G-64VXG3DWLC');
+})();
+
 // ─── PRODUCTS ───────────────────────────────────────────────
 const PRODUCTS = [
   { id:'p01', name:'Nike Air Max 90',         cat:'Footwear',    price:129.99, emoji:'👟', badge:'Bestseller', badgeType:'rust',   desc:'The Air Max 90 stays true to its OG running roots with the iconic Waffle outsole, stitched overlays, and classic details. The Max Air cushioning gives you all-day comfort.',  rating:4.8, reviews:2840 },
