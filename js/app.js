@@ -77,7 +77,7 @@ function trackAbandonedCart() {
   const cart = cartGet();
   if (cart.length === 0) return;
   umerang.track({
-    eventType: "abandoned_cart",
+    
     customProperties: {
       currency: "USD",
       cart: cartTotal(cart).toFixed(2),
@@ -88,7 +88,8 @@ function trackAbandonedCart() {
         price: i.price,
         quantity: i.qty
       }))
-    }
+    },
+    eventType: "abandoned_cart"
   });
 }
 
