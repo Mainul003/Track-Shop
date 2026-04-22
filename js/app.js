@@ -39,7 +39,7 @@ function genId() { return 'ORD-' + Date.now().toString(36).toUpperCase(); }
 
 // ─── CART ────────────────────────────────────────────────────
 function cartGet()       { return JSON.parse(localStorage.getItem('shop_cart') || '[]'); }
-function cartSave(c)     { localStorage.setItem('shop_cart', JSON.stringify(c)); cartUpdateUI(); }
+function cartSave(c)     { localStorage.setItem('shop_cart', JSON.stringify(c)); _abandonedCartFired = false; cartUpdateUI(); }
 function cartTotal(c)    { return c.reduce((s,i) => s + i.price * i.qty, 0); }
 function cartCount(c)    { return c.reduce((s,i) => s + i.qty, 0); }
 
@@ -51,7 +51,7 @@ function cartAdd(id, qty = 1) {
   cartSave(c);
   console.log(p,"Product");
   umerang.track({
-    eventType: "Add to Cart",
+    eventType: "add_to_cart",
     customProperties: {
       currency: "USD",
       product_id: p.id,
@@ -73,9 +73,12 @@ function cartUpdateQty(id, qty) {
 function cartClear() { cartSave([]); }
 
 // ─── ABANDONED CART ─────────────────────────────────────────
+let _abandonedCartFired = false;
 function trackAbandonedCart() {
+  if (_abandonedCartFired) return;
   const cart = cartGet();
   if (cart.length === 0) return;
+  _abandonedCartFired = true;
   umerang.track({
     eventType: "abandoned_cart",
     customProperties: {
@@ -84,9 +87,9 @@ function trackAbandonedCart() {
       item: cart.reduce((s, i) => s + i.qty, 0)
     },
     items: cart.map(i => ({
-      product: i.id,
-      name:    i.name,
-      price:   i.price,
+      id:       i.id,
+      name:     i.name,
+      price:    i.price,
       quantity: i.qty
     }))
   });
@@ -193,16 +196,5 @@ function renderFooter() {
 // Init cart count on every page
 document.addEventListener('DOMContentLoaded', cartUpdateUI);
 
-// ─── ABANDONED CART LISTENER ────────────────────────────────
-Only runs on cart.html
-if (window.location.pathname.includes('cart.html')) {
-  window.addEventListener('beforeunload', function () {
-    const wentToCheckout = sessionStorage.getItem('went_to_checkout');
-    if (!wentToCheckout) {
-      trackAbandonedCart();
-    }
-    sessionStorage.removeItem('went_to_checkout');
-  });
-}
 
 
