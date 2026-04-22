@@ -60,7 +60,28 @@
   const grid = document.getElementById('results-grid');
   if (results.length > 0) {
     grid.className = 'product-grid';
-    grid.innerHTML = results.map(productCardHTML).join('');
+    // Use data-search-result attribute so Umerang fires search_result_click
+    grid.innerHTML = results.map(p => {
+      const badgeHTML = p.badge ? `<div class="pc-badge"><span class="badge badge-${p.badgeType}">${p.badge}</span></div>` : '';
+      return `
+        <div class="product-card" data-search-result="true"
+          data-product-id="${p.id}" data-product-name="${p.name}"
+          onclick="goProduct('${p.id}')">
+          <div class="pc-img">${badgeHTML}${p.emoji}</div>
+          <div class="pc-body">
+            <div class="pc-cat">${p.cat}</div>
+            <div class="pc-name">${p.name}</div>
+            <div class="pc-stars">${stars(p.rating)} <span>(${p.reviews.toLocaleString()})</span></div>
+            <div class="pc-price">${fmt(p.price)}</div>
+            <div class="pc-actions">
+              <button class="btn btn-ink btn-sm" style="flex:1"
+                onclick="event.stopPropagation();cartAdd('${p.id}');showCartToast('${p.name}')">Add to Cart</button>
+              <button class="btn btn-ghost btn-sm"
+                onclick="event.stopPropagation();goProduct('${p.id}')">View →</button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
   } else if (q) {
     grid.innerHTML = `
       <div class="no-results">
