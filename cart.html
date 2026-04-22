@@ -165,7 +165,7 @@ function testAbandonedCart() {
 
   console.log('🔴 abandoned_cart firing with payload:', payload);
 
-  umerang.track("abandoned_cart",payload);
+  umerang.track(payload, "abandoned_cart");
 
   console.log('✅ abandoned cart ok sent to Umerang');
 
