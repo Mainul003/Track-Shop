@@ -155,11 +155,4 @@ function renderFooter() {
 // Init cart count on every page
 document.addEventListener('DOMContentLoaded', cartUpdateUI);
 
-// Google Page settings
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-1XH765PK31"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-1XH765PK31');
-</script>
+
