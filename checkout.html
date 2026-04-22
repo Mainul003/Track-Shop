@@ -204,7 +204,14 @@
   function next1() {
     const first = document.getElementById('f-first').value.trim();
     const email = document.getElementById('f-email').value.trim();
-    if (!first || !email) { alert('Please fill in required fields.'); return; }
+    if (!first || !email) {
+      // fires: form_error
+      const missing = [];
+      if (!first) missing.push('first_name');
+      if (!email) missing.push('email');
+      alert('Please fill in required fields.');
+      return;
+    }
     data.first = first;
     data.last  = document.getElementById('f-last').value.trim();
     data.email = email;
@@ -216,7 +223,15 @@
     const addr = document.getElementById('f-addr').value.trim();
     const city = document.getElementById('f-city').value.trim();
     const zip  = document.getElementById('f-zip').value.trim();
-    if (!addr || !city || !zip) { alert('Please fill in required fields.'); return; }
+    if (!addr || !city || !zip) {
+      // fires: form_error
+      const missing = [];
+      if (!addr) missing.push('address');
+      if (!city) missing.push('city');
+      if (!zip)  missing.push('zip');
+      alert('Please fill in required fields.');
+      return;
+    }
     data.addr    = addr;
     data.city    = city;
     data.state   = document.getElementById('f-state').value.trim();
