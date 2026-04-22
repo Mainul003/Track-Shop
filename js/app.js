@@ -194,15 +194,15 @@ function renderFooter() {
 document.addEventListener('DOMContentLoaded', cartUpdateUI);
 
 // ─── ABANDONED CART LISTENER ────────────────────────────────
-// Only runs on cart.html
-// if (window.location.pathname.includes('cart.html')) {
-//   window.addEventListener('beforeunload', function () {
-//     const wentToCheckout = sessionStorage.getItem('went_to_checkout');
-//     if (!wentToCheckout) {
-//       trackAbandonedCart();
-//     }
-//     sessionStorage.removeItem('went_to_checkout');
-//   });
-// }
+Only runs on cart.html
+if (window.location.pathname.includes('cart.html')) {
+  window.addEventListener('beforeunload', function () {
+    const wentToCheckout = sessionStorage.getItem('went_to_checkout');
+    if (!wentToCheckout) {
+      trackAbandonedCart();
+    }
+    sessionStorage.removeItem('went_to_checkout');
+  });
+}
 
 
