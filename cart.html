@@ -151,9 +151,7 @@ function testAbandonedCart() {
     return;
   }
 
-  const payload = {
-    eventType: "abandoned_cart",
-    customProperties: {
+    const payload = {
       currency: "USD",
       cart: cartTotal(cart).toFixed(2),
       item: cart.reduce((s, i) => s + i.qty, 0),
@@ -163,14 +161,13 @@ function testAbandonedCart() {
         price: i.price,
         quantity: i.qty
       }))
-    }
   };
 
   console.log('🔴 abandoned_cart firing with payload:', payload);
 
-  umerang.track(payload);
+  umerang.track("abandoned_cart",payload);
 
-  console.log('✅ abandoned_cart ok sent to Umerang');
+  console.log('✅ abandoned cart ok sent to Umerang');
 
   alert('✅ abandoned_cart fired!\n\nNow check:\nDevTools → Network tab → filter by "stage-api"');
 }
