@@ -72,6 +72,22 @@ function cartUpdateQty(id, qty) {
 }
 function cartClear() { cartSave([]); }
 
+// ─── ABANDONED CART ─────────────────────────────────────────
+function trackAbandonedCart() {
+  const cart = cartGet();
+  if (cart.length === 0) return;
+  umerang.track({
+    eventType: "abandoned_cart",
+    customProperties: {
+      currency: "USD",
+      cart: cartTotal(cart).toFixed(2),
+      item: cart.reduce((s, i) => s + i.qty, 0),
+      product: cart[0].id,
+      name: cart[0].name
+    }
+  });
+}
+
 function cartUpdateUI() {
   const count = cartCount(cartGet());
   document.querySelectorAll('.cart-num').forEach(el => el.textContent = count);
@@ -126,7 +142,10 @@ function goHome()       { window.location.href = 'index.html'; }
 function goProducts(cat){ window.location.href = cat ? `products.html?cat=${cat}` : 'products.html'; }
 function goProduct(id)  { window.location.href = `product.html?id=${id}`; }
 function goCart()       { window.location.href = 'cart.html'; }
-function goCheckout()   { window.location.href = 'checkout.html'; }
+function goCheckout()   {
+  sessionStorage.setItem('went_to_checkout', 'true');
+  window.location.href = 'checkout.html';
+}
 function goSuccess(id)  { window.location.href = `success.html?order=${id}`; }
 function goAuth()       { window.location.href = 'auth.html'; }
 function goSearch(q)    { window.location.href = `search.html?q=${encodeURIComponent(q)}`; }
@@ -168,5 +187,17 @@ function renderFooter() {
 
 // Init cart count on every page
 document.addEventListener('DOMContentLoaded', cartUpdateUI);
+
+// ─── ABANDONED CART LISTENER ────────────────────────────────
+// Only runs on cart.html
+if (window.location.pathname.includes('cart.html')) {
+  window.addEventListener('beforeunload', function () {
+    const wentToCheckout = sessionStorage.getItem('went_to_checkout');
+    if (!wentToCheckout) {
+      trackAbandonedCart();
+    }
+    sessionStorage.removeItem('went_to_checkout');
+  });
+}
 
 
