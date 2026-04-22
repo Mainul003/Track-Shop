@@ -147,10 +147,11 @@
 function testAbandonedCart() {
   const cart = cartGet();
   if (cart.length === 0) {
-    alert('❌ Cart is empty. Add a product first.');
+    alert('❌ Cart is empty!\n\nGo to the Products page first and add at least one item to cart, then come back here.');
     return;
   }
-  umerang.track({
+
+  const payload = {
     eventType: "abandoned_cart",
     customProperties: {
       currency: "USD",
@@ -163,8 +164,15 @@ function testAbandonedCart() {
         quantity: i.qty
       }))
     }
-  });
-  alert('✅ abandoned_cart fired! Check Network tab → stage-api.clubeez.com');
+  };
+
+  console.log('🔴 abandoned_cart firing with payload:', payload);
+
+  umerang.track(payload);
+
+  console.log('✅ abandoned_cart sent to Umerang');
+
+  alert('✅ abandoned_cart fired!\n\nNow check:\nDevTools → Network tab → filter by "stage-api"');
 }
 </script>
 </body>
