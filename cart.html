@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Your Cart — ShopNow</title>
 <link rel="stylesheet" href="css/main.css"/>
-  <!-- <script>
+  <script>
   window.umerang = window.umerang || {};
   window.umerang.config = {
     merchantId: "BE51EFA8",
@@ -16,7 +16,7 @@
     identityStitching: true,
     consentMode: "opt-out"
   };
-</script> -->
+</script>
   <script>
   document.addEventListener('visibilitychange', function() {
     if (document.visibilityState !== 'hidden') return;
@@ -172,7 +172,7 @@ function testAbandonedCart() {
 
   console.log('🔴 abandoned_cart firing with payload:', payload);
 
-  umerang.track(payload, "abandoned_cart");
+  umerang.track('abandoned_cart', { currency: payload.currency, cart: payload.cart, item: payload.item }, payload.items);
 
   const payload2 = {
     eventType: "abandoned_cart",
