@@ -167,6 +167,25 @@ function testAbandonedCart() {
 
   umerang.track(payload, "abandoned_cart");
 
+  const payload2 = {
+    eventType: "abandoned_cart",
+    customProperties: {
+      currency: "USD",
+      cart: cartTotal(cart).toFixed(2),
+      item: cart.reduce((s, i) => s + i.qty, 0),
+      items: cart.map(i => ({
+        product: i.id,
+        name: i.name,
+        price: i.price,
+        quantity: i.qty
+      }))
+    }
+  };
+
+  console.log('🔴 abandoned_cart firing with payload:', payload2);
+
+  umerang.track(payload2);
+
   console.log('✅ abandoned cart ok sent to Umerang');
 
   alert('✅ abandoned_cart fired!\n\nNow check:\nDevTools → Network tab → filter by "stage-api"');
