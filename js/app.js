@@ -74,11 +74,18 @@ function cartClear() { cartSave([]); }
 
 // ─── ABANDONED CART ─────────────────────────────────────────
 let _abandonedCartFired = false;
+
+// Reset when user comes back to the page — tab switch is not abandonment
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') _abandonedCartFired = false;
+});
+
 function trackAbandonedCart() {
   if (_abandonedCartFired) return;
   const cart = cartGet();
   if (cart.length === 0) return;
   _abandonedCartFired = true;
+  if (typeof umerang === 'undefined' || !umerang.track) return;
   umerang.track({
     eventType: "abandoned_cart",
     customProperties: {
@@ -154,7 +161,10 @@ function goCheckout()   {
   sessionStorage.setItem('went_to_checkout', 'true');
   window.location.href = 'checkout.html';
 }
-function goSuccess(id)  { window.location.href = `success.html?order=${id}`; }
+function goSuccess(id)  {
+  sessionStorage.removeItem('went_to_checkout'); // clear so future cart visits track abandonment correctly
+  window.location.href = `success.html?order=${id}`;
+}
 function goAuth()       { window.location.href = 'auth.html'; }
 function goSearch(q)    { window.location.href = `search.html?q=${encodeURIComponent(q)}`; }
 
