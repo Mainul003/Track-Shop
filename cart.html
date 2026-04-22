@@ -133,5 +133,39 @@
 
   render();
 </script>
+  <!-- TEMP: Abandoned Cart Test Button — remove after testing -->
+<div style="position:fixed;bottom:24px;right:24px;z-index:9999;">
+  <button onclick="testAbandonedCart()" style="
+    background:#e53e3e;color:#fff;border:none;border-radius:10px;
+    padding:12px 20px;font-size:.875rem;font-weight:700;cursor:pointer;
+    box-shadow:0 4px 16px rgba(229,62,62,.4);">
+    🔴 Fire Abandoned Cart
+  </button>
+</div>
+
+<script>
+function testAbandonedCart() {
+  const cart = cartGet();
+  if (cart.length === 0) {
+    alert('❌ Cart is empty. Add a product first.');
+    return;
+  }
+  umerang.track({
+    eventType: "abandoned_cart",
+    customProperties: {
+      currency: "USD",
+      cart: cartTotal(cart).toFixed(2),
+      item: cart.reduce((s, i) => s + i.qty, 0),
+      items: cart.map(i => ({
+        product: i.id,
+        name: i.name,
+        price: i.price,
+        quantity: i.qty
+      }))
+    }
+  });
+  alert('✅ abandoned_cart fired! Check Network tab → stage-api.clubeez.com');
+}
+</script>
 </body>
 </html>
