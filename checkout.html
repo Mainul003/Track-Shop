@@ -235,7 +235,7 @@
     if (cart.length === 0) { goProducts(); return; }
     const orderId = genId();
     const orderValue = cartTotal(cart);
-    console.log('💰 purchase firing...');
+    console.log('💰 purchase firing...', cart);
     umerang.track({
     eventType: "order_placed",
     customProperties: {
