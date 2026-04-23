@@ -237,11 +237,12 @@
     const orderValue = cartTotal(cart);
     console.log('💰 purchase firing...', cart);
     umerang.track({
-    eventType: "order_placed",
-    customProperties: {
-      orderTotal: 122,
-      qunatity: 10,
-      items: [{
+  eventType: "order_placed",
+  customProperties: {
+    orderTotal: 122,
+    quantity: 10
+  },
+    items: [{
         id: 2,
         name: "Classic T-Shirt",
         price: 29.99,
@@ -253,8 +254,7 @@
         price: 89.99,
         quantity: 2
     }]
-    }
-  });
+});
     console.log('✅ purchase sent — Order ID:', orderId);
     cartClear();
     goSuccess(orderId);
