@@ -241,12 +241,18 @@
     customProperties: {
       orderTotal: orderValue,
       qunatity:   cart.reduce((s, i) => s + i.qty, 0),
-      items:      cart.map(i => ({
-        product:  i.id,
-        name:     i.name,
-        price:    i.price,
-        quantity: i.qty
-      }))
+      items: [{
+        id: 2,
+        name: "Classic T-Shirt",
+        price: 29.99,
+        quantity: 2
+    },
+    {
+        id: 1,
+        name: "Running Sneakers",
+        price: 89.99,
+        quantity: 2
+    }]
     }
   });
     console.log('✅ purchase sent — Order ID:', orderId);
