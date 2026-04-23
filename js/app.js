@@ -80,20 +80,22 @@ function trackAbandonedCart() {
   const cart = cartGet();
   if (cart.length === 0) return;
   _abandonedCartFired = true;
+  console.log('🔴 abandoned_cart firing...');
   umerang.track({
     eventType: "abandoned_cart",
     customProperties: {
       currency: "USD",
       cart: cartTotal(cart).toFixed(2),
-      item: cart.reduce((s, i) => s + i.qty, 0)
-    },
-    items: cart.map(i => ({
-      id:       i.id,
-      name:     i.name,
-      price:    i.price,
-      quantity: i.qty
-    }))
+      item: cart.reduce((s, i) => s + i.qty, 0),
+      items: cart.map(i => ({
+        product:  i.id,
+        name:     i.name,
+        price:    i.price,
+        quantity: i.qty
+      }))
+    }
   });
+  console.log('✅ abandoned_cart sent');
 }
 
 
@@ -151,8 +153,25 @@ function goHome()       { window.location.href = 'index.html'; }
 function goProducts(cat){ window.location.href = cat ? `products.html?cat=${cat}` : 'products.html'; }
 function goProduct(id)  { window.location.href = `product.html?id=${id}`; }
 function goCart()       { window.location.href = 'cart.html'; }
-function goCheckout()   {
+function goCheckout() {
   sessionStorage.setItem('went_to_checkout', 'true');
+  const cart = cartGet();
+  console.log('🛒 checkout_started firing...');
+  umerang.track({
+    eventType: "checkout_started",
+    customProperties: {
+      currency:    "USD",
+      cart_value:  cartTotal(cart).toFixed(2),
+      item_count:  cart.reduce((s, i) => s + i.qty, 0),
+      items: cart.map(i => ({
+        product:  i.id,
+        name:     i.name,
+        price:    i.price,
+        quantity: i.qty
+      }))
+    }
+  });
+  console.log('✅ checkout_started sent');
   window.location.href = 'checkout.html';
 }
 function goSuccess(id)  { window.location.href = `success.html?order=${id}`; }
@@ -196,6 +215,53 @@ function renderFooter() {
 
 // Init cart count on every page
 document.addEventListener('DOMContentLoaded', cartUpdateUI);
+
+// ─── SESSION START ───────────────────────────────────────────
+(function() {
+  const SESSION_KEY = 'umerang_session_started';
+  if (!sessionStorage.getItem(SESSION_KEY)) {
+    sessionStorage.setItem(SESSION_KEY, 'true');
+    console.log('🟢 session_start firing...');
+    umerang.track({
+      eventType: "session_start",
+      customProperties: {
+        page:     window.location.pathname,
+        referrer: document.referrer || 'direct'
+      }
+    });
+    console.log('✅ session_start sent');
+  }
+})();
+
+// ─── SESSION END ─────────────────────────────────────────────
+window.addEventListener('beforeunload', function() {
+  console.log('🔴 session_end firing...');
+  umerang.track({
+    eventType: "session_end",
+    customProperties: {
+      page:          window.location.pathname,
+      session_pages: parseInt(sessionStorage.getItem('page_count') || '1')
+    }
+  });
+});
+
+// Track page count within session
+(function() {
+  const count = parseInt(sessionStorage.getItem('page_count') || '0') + 1;
+  sessionStorage.setItem('page_count', count);
+})();
+
+// ─── ABANDONED CART LISTENER ────────────────────────────────
+// Only runs on cart.html
+if (window.location.pathname.includes('cart.html')) {
+  window.addEventListener('beforeunload', function() {
+    const wentToCheckout = sessionStorage.getItem('went_to_checkout');
+    if (!wentToCheckout) {
+      trackAbandonedCart();
+    }
+    sessionStorage.removeItem('went_to_checkout');
+  });
+}
 
 
 
