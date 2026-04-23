@@ -237,13 +237,18 @@
     const orderValue = cartTotal(cart);
     console.log('💰 purchase firing...');
     umerang.track({
-  eventType: "order_placed",
-  customProperties: {
-    orderTotal: orderValue,
-    qunatity: i.qty,
-    items: cart
-  }
-});
+    eventType: "order_placed",
+    customProperties: {
+      orderTotal: orderValue,
+      qunatity:   cart.reduce((s, i) => s + i.qty, 0),
+      items:      cart.map(i => ({
+        product:  i.id,
+        name:     i.name,
+        price:    i.price,
+        quantity: i.qty
+      }))
+    }
+  });
     console.log('✅ purchase sent — Order ID:', orderId);
     cartClear();
     goSuccess(orderId);
