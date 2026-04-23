@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Your Cart — ShopNow</title>
 <link rel="stylesheet" href="css/main.css"/>
-  <!-- <script>
+<script>
   window.umerang = window.umerang || {};
   window.umerang.config = {
     merchantId: "BE51EFA8",
@@ -16,31 +16,8 @@
     identityStitching: true,
     consentMode: "opt-out"
   };
-</script> -->
-  <!-- <script>
-  window.umerang = window.umerang || {};
-  window.umerang.config = { merchantId: 'BE51EFA8', debug: true };
-</script> -->
-
-  <script>
-  document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState !== 'hidden') return;
-    if (sessionStorage.getItem('went_to_checkout')) return;
-    trackAbandonedCart();
-  });
 </script>
-
-  <!-- <script>
-   window.addEventListener('pagehide', function() {
-  if (sessionStorage.getItem('went_to_checkout')) return;
-  trackAbandonedCart();
-});
-</script> -->
-
- 
-  
-<script async src="/umerang.js?merchantId=BE51EFA8"></script>
- 
+<script async src="/umerang.js"></script>
 </head>
 <body>
 
@@ -155,12 +132,13 @@
 
   render();
 </script>
-  <!-- TEMP: Abandoned Cart Test Button — remove after testing -->
-<div style="position:fixed;bottom:24px;right:24px;z-index:9999;">
+
+<!-- TEMP: Test Button — remove after testing -->
+<div style="position:fixed;bottom:24px;right:24px;z-index:99999;">
   <button onclick="testAbandonedCart()" style="
     background:#e53e3e;color:#fff;border:none;border-radius:10px;
-    padding:12px 20px;font-size:.875rem;font-weight:700;cursor:pointer;
-    box-shadow:0 4px 16px rgba(229,62,62,.4);">
+    padding:14px 24px;font-size:1rem;font-weight:700;cursor:pointer;
+    box-shadow:0 4px 20px rgba(229,62,62,.6);">
     🔴 Fire Abandoned Cart
   </button>
 </div>
@@ -169,49 +147,29 @@
 function testAbandonedCart() {
   const cart = cartGet();
   if (cart.length === 0) {
-    alert('❌ Cart is empty!\n\nGo to the Products page first and add at least one item to cart, then come back here.');
+    alert('❌ Cart is empty!\n\nAdd a product first then come back.');
     return;
   }
-
-    const payload = {
-      currency: "USD",
-      cart: cartTotal(cart).toFixed(2),
-      item: cart.reduce((s, i) => s + i.qty, 0),
-      items: cart.map(i => ({
-        product: i.id,
-        name: i.name,
-        price: i.price,
-        quantity: i.qty
-      }))
-  };
-
-  console.log('🔴 abandoned_cart firing with payload:', payload);
-
-  umerang.track('abandoned_cart', { currency: payload.currency, cart: payload.cart, item: payload.item }, payload.items);
-
-  const payload2 = {
+  const payload = {
     eventType: "abandoned_cart",
     customProperties: {
       currency: "USD",
-      cart: cartTotal(cart).toFixed(2),
-      item: cart.reduce((s, i) => s + i.qty, 0),
-      items: cart.map(i => ({
-        product: i.id,
-        name: i.name,
-        price: i.price,
+      cart:     cartTotal(cart).toFixed(2),
+      item:     cart.reduce((s, i) => s + i.qty, 0),
+      items:    cart.map(i => ({
+        product:  i.id,
+        name:     i.name,
+        price:    i.price,
         quantity: i.qty
       }))
     }
   };
-
-  console.log('🔴 abandoned_cart firing with payload:', payload2);
-
-  umerang.track(payload2);
-
-  console.log('✅ abandoned cart ok sent to Umerang');
-
-  alert('✅ abandoned_cart fired!\n\nNow check:\nDevTools → Network tab → filter by "stage-api"');
+  console.log('🔴 abandoned_cart firing with payload:', payload);
+  umerang.track(payload);
+  console.log('✅ abandoned_cart sent to Umerang');
+  alert('✅ abandoned_cart fired!\n\nCheck:\n• DevTools Console — see full payload\n• DevTools Network → filter "stage-api" — see the request');
 }
 </script>
+
 </body>
 </html>
